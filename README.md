@@ -1,6 +1,6 @@
 # Intralisp
 
-Do you hate PHP, and also hate bash too much to use BHB?
+Do you hate PHP and also hate bash too much to use BHB?
 
 Use intralisp!
 

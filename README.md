@@ -41,7 +41,24 @@ echo '%= "Hello World %' | intralisp
 
 ### VHDL 😏
 ```
+entity Adder3Bit_TB is
+end 
+
+...
+
 % dotimes (i 8)
-@Load_TB <= %=~ "~3,'0b" i%;
-@%
+(dotimes (j 8) @
+wait until falling_edge(CLK);
+A_TB <= %=~ "~3,'0b" i%;
+B_TB <= %=~ "~3,'0b" j%;
+@)%
+```
+
+### Random Numbers
+```
+Let's generate some (pseudo) random numbers:
+% setf *random-state* (make-random-state t) %
+% dotimes ( i 10 )
+@* Here is the %=~"~:R"i% random number: %~ random 8 %
+@ %
 ```

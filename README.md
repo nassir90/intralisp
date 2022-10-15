@@ -30,6 +30,11 @@ intralisp file.intralisp
 echo 'Hello [%= "World" %]' | intralisp
 ```
 
+## Dependencies
+
+* Some lisp interpreter.
+I have only tested things using SBCL, YMMV with other lisp interpreters.
+
 ## Examples
 
 See examples folder.

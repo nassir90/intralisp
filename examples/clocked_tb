@@ -1,0 +1,6 @@
+[%make-random-state (seed-random-state 0)%]
+[%dotimes (i 100)[@
+wait until falling_edge(CLK);
+Source_A <= [%=~ "~32,'0b" (random 32)%];
+Source_B <= [%=~ "~32,'0b" (random 32)%];
+@]%]

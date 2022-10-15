@@ -1,0 +1,3 @@
+[%loop for i from 1 to 10 do
+[@Hello for the [%=~"~:r"i%] time!
+@]%]

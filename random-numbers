@@ -1,5 +1,0 @@
-Let's generate some (pseudo) random numbers:
-% setf *random-state* (make-random-state t) %
-% dotimes ( i 10 )
-@* Here is the %=~"~:R"i% random number: %~ random 8 %
-@ %

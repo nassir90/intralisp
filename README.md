@@ -27,7 +27,7 @@ Literal sections are ended by the `@]` token.
 ```shell
 intralisp < file.intralisp
 intralisp file.intralisp
-echo '%= "Hello World %' | intralisp
+echo 'Hello [%= "World" %]' | intralisp
 ```
 
 ## Examples

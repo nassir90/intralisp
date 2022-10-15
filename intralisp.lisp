@@ -40,16 +40,15 @@
              (intralisp-parse-literal
               (subseq rest statement-length)
               :accumulated-length (+ accumulated-length statement-length (length accumulated-string))))))
-         ((or (= 0 (length rest))
-              (equal end-literal (subseq rest 0 1)))
-          (intralisp-print-literal accumulated-string)
-          (+ accumulated-length (length accumulated-string)))
+        ((or (= 0 (length rest))
+             (equal end-literal (subseq rest 0 1)))
+         (intralisp-print-literal accumulated-string)
+         (+ accumulated-length (length accumulated-string)))
         (t
          (intralisp-parse-literal
           (subseq rest 1)
           :accumulated-length accumulated-length
           :accumulated-string (concatenate 'string accumulated-string (subseq rest 0 1))))))
-
 
 (intralisp-parse-literal
  (reduce (lambda (a b)

@@ -3,6 +3,12 @@
 (defvar start-literal "[@")
 (defvar end-literal "@]")
 
+(defvar loaded-files nil)
+
+(defun try-fill-buffer (buffer)
+  (let* ((bytes-read (read-sequence buffer *standard-input*)))
+    (subseq buffer 0 bytes-read)))
+
 (defun intralisp-print-literal (literal)
   (unless (= 0 (length literal))
     (format t "~s~%" `(format t "~a" ,literal))))
@@ -26,22 +32,36 @@
           :accumulated-string (concatenate 'string accumulated-string (subseq rest 0 1))))))
 
 (defun intralisp-parse-literal (rest &key (accumulated-length 0) (accumulated-string "") )
-  (cond ((and (<= (length start-literal) (length rest))
-              (equal start-statement (subseq rest 0 (length start-statement))))
+  (cond ((and (<= (1+ (length start-literal)) (length rest))
+              (equal start-statement (subseq rest 0 (length start-statement)))
+              (equal #\! (aref rest (length start-statement))))
+         (intralisp-print-literal accumulated-string)
+         (let* ((after-first-quote (1+ (position #\" rest)))
+                (second-quote (position #\" rest :start after-first-quote))
+                (end-of-section (+ (length end-statement) (search end-statement rest)))
+                (file-to-load (truename (subseq rest after-first-quote second-quote))))
+           (unless (member file-to-load loaded-files :test #'equal)
+             (with-open-file (stream file-to-load)
+               (intralisp-parse-stream stream))
+             (push file-to-load loaded-files))
+           (intralisp-parse-literal
+            (subseq rest end-of-section)
+            :accumulated-length (+ accumulated-length end-of-section))))
+        ((and (<= (length start-literal) (length rest))
+             (equal start-statement (subseq rest 0 (length start-statement))))
          (intralisp-print-literal accumulated-string)
          (multiple-value-bind (start-delimiter-length
-                               end-delimiter-length
                                implicit-predicate
                                terminator)
-             (cond ((equal "=~" (subseq rest (length start-statement) (+ 2 (length start-statement))))  (values 4 2 "(FORMAT T " ")"))
-                   ((equal #\~ (aref rest (length start-statement))) (values 3 2 "(FORMAT T \"~a\" (" "))"))
-                   ((equal #\= (aref rest (length start-statement))) (values 3 2 "(FORMAT T \"~a\" " ")"))
-                   (t (values 2 2 "(" ")")))
+             (cond ((equal "=~" (subseq rest (length start-statement) (+ 2 (length start-statement)))) (values 4 "(FORMAT T " ")"))
+                   ((equal #\~ (aref rest (length start-statement))) (values (+ 1 (length start-statement)) "(FORMAT T \"~a\" (" "))"))
+                   ((equal #\= (aref rest (length start-statement))) (values (+ 1 (length start-statement)) "(FORMAT T \"~a\" " ")"))
+                   (t (values (length start-statement) "(" ")")))
            (format t "~a" implicit-predicate)
            (let ((statement-length (+ start-delimiter-length
                                       (intralisp-parse-statement (subseq rest start-delimiter-length)
                                                                  :terminator terminator)
-                                      end-delimiter-length)))
+                                      (length end-statement))))
              (intralisp-parse-literal
               (subseq rest statement-length)
               :accumulated-length (+ accumulated-length statement-length (length accumulated-string))))))
@@ -56,13 +76,16 @@
           :accumulated-length accumulated-length
           :accumulated-string (concatenate 'string accumulated-string (subseq rest 0 1))))))
 
-(intralisp-parse-literal
- (reduce (lambda (a b)
-           (concatenate 'string a b))
-         (loop
-           with buffer = (make-string 4096)
-           for bytes-read = (read-sequence
-                             buffer
-                             *standard-input*)
-           while (not (= 0 bytes-read))
-           collecting (subseq buffer 0 bytes-read))))
+(defun intralisp-parse-stream (stream)
+  (intralisp-parse-literal
+   (reduce (lambda (a b)
+             (concatenate 'string a b))
+           (loop
+             with buffer = (make-string 4096)
+             for bytes-read = (read-sequence
+                               buffer
+                               stream)
+             while (not (= 0 bytes-read))
+             collecting (subseq buffer 0 bytes-read)))))
+
+(intralisp-parse-stream *standard-input*)

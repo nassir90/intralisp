@@ -14,6 +14,7 @@ Inside a literal section, the following syntax is recognised.
 * `[%~ FUNCTION ARGS %]`: the same as `%]`, but the output is printed out.
 * `[%= VARIABLE %]`: prints out the value of a variable
 * `[%=~ FORMAT-STRING VARIABLE* %]`: prints out the value of a variable and allows you to specify a format string to use
+* `[%! "INTRALISP-FILE" %]` : Imports another intralisp file
 
 Each of these start a statement.
 Inside a statement the following syntax is recognised:

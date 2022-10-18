@@ -43,7 +43,8 @@
            (unless (member file-to-load loaded-files :test #'equal)
              (with-open-file (stream file-to-load)
                (intralisp-parse-stream stream))
-             (push file-to-load loaded-files))
+             (push file-to-load loaded-files)
+             (format t "(in-package :cl-user)~%"))
            (intralisp-parse-literal
             (subseq rest end-of-section)
             :accumulated-length (+ accumulated-length end-of-section))))

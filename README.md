@@ -14,7 +14,9 @@ Inside a literal section, the following syntax is recognised.
 * `[%~ FUNCTION ARGS %]`: the same as `%]`, but the output is printed out.
 * `[%= VARIABLE %]`: prints out the value of a variable
 * `[%=~ FORMAT-STRING VARIABLE* %]`: prints out the value of a variable and allows you to specify a format string to use
-* `[%! "INTRALISP-FILE" %]` : Imports another intralisp file
+* `[%! "INTRALISP-FILE" %]` : Imports another intralisp file.
+Note that a list of files is maintained and files will only be imported once.
+If you want to define a reusable template, use a function that prints directly to the current stream OR use a function that contains a deferred literal section (see below) and print the return value as a string.
 
 Each of these start a statement.
 Inside a statement the following syntax is recognised:

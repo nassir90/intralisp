@@ -53,9 +53,9 @@
                 (end-of-section (+ (length end-statement) (search end-statement rest)))
                 (file-to-load (truename (subseq rest after-first-quote second-quote))))
            (unless (member file-to-load loaded-files :test #'equal)
+             (push file-to-load loaded-files)
              (with-open-file (stream file-to-load)
                (parse-stream stream))
-             (push file-to-load loaded-files)
              (format t "(in-package :cl-user)~%"))
            (parse-literal
             stream

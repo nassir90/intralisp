@@ -11,15 +11,18 @@
 
 (defvar loaded-files nil)
 
-(defun print-literal (stream literal)
-  (unless (= 0 (length literal))
+(defun print-literal (stream literal &key (terminal nil))
+  (unless (or (= 0 (length literal))
+              (and (= 1 (length literal))
+                   (equal #\newline (aref literal 0))
+                   (not terminal)))
     (format T "~s~%" `(format ,(intern stream) "~a" ,literal))))
 
 (defun parse-statement (stream rest &key (accumulated-length 0) (accumulated-string "") (terminator ")"))
   (cond ((equal start-literal (subseq rest 0 (length start-literal)))
          (format t "~a~%" accumulated-string)
          (multiple-value-bind (start-delimiter-length implicit-predicate literal-terminator stream)
-             (cond ((equal (aref rest (length start-literal)) #\^) (values (+ 1 (length start-literal)) "(WITH-OUTPUT-TO-STRING (OUTPUT)" ")" "OUTPUT"))
+             (cond ((equal (aref rest (length start-literal)) #\^) (values (+ 1 (length start-literal)) "(WITH-OUTPUT-TO-STRING (OUTPUT)~%" ")" "OUTPUT"))
                    (t (values (length start-literal) "" "" "T")))
            (format t implicit-predicate)
            (let* ((literal-length (+ start-delimiter-length (length end-literal) (parse-literal stream (subseq rest start-delimiter-length)))))
@@ -84,7 +87,7 @@
         ((or (= 0 (length rest))
              (and (<= (length end-literal) (length rest))
                   (equal end-literal (subseq rest 0 (length end-literal)))))
-         (print-literal stream accumulated-string)
+         (print-literal stream accumulated-string :terminal t)
          (+ accumulated-length (length accumulated-string)))
         (t
          (parse-literal

@@ -21,6 +21,8 @@ Inside a statement the following syntax is recognised:
 
 * `%]`: The token that ends the statement
 * `[@ TEXT @]`: Starts a nested literal section.
+* `[@^ TEXT @]`: Starts a literal section, but rather then printing to standard output, the section evaluates to a string.
+E.g. you can do things such as `[% defvar header [@^Hello world@] %]`
 Literal sections are ended by the `@]` token.
 
 ## Usage 

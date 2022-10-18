@@ -43,3 +43,9 @@ I have only tested things using SBCL, YMMV with other lisp interpreters.
 ## Examples
 
 See examples folder.
+
+## Caveats
+
+* There is no error handling.
+On the flip-side 90% of errors are because of missing terminators that you will detect if you squint hard enough.
+* You will need to learn some lisp.
